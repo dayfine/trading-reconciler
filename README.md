@@ -268,8 +268,15 @@ in `trading-1` (the reconciler's math is verifiable by hand).
 
 ## Status
 
-**2026-04-29** — Repo bootstrapped with this design doc. No
-implementation yet. Bootstrap planned by maintainer in a separate session.
+**2026-04-29** — Repo bootstrapped with this design doc.
+
+**2026-04-30** — `PHASE_1_SPEC.md` finalized. Definitive contract for
+the Phase 1 reconciler: event-walk semantics, strict realized-cash
+floor, 13 hand-computed test fixtures, severity-based exit codes.
+Implementation pending.
+
+Read order for implementers: this `README.md` (design rationale +
+phases) → `PHASE_1_SPEC.md` (authoritative I/O contract + accounting).
 
 ## Cross-references in `trading-1`
 
