@@ -4,7 +4,11 @@ import csv
 from datetime import date, datetime
 from pathlib import Path
 
-from .models import Side, Trade
+from .models import OpenPosition, Side, Split, Trade
+
+HEADER_OPEN_POSITIONS = "symbol,side,entry_date,entry_price,quantity"
+HEADER_SPLITS = "symbol,date,factor"
+HEADER_FINAL_PRICES = "symbol,price"
 
 HEADER_13_COL = (
     "symbol,side,entry_date,exit_date,days_held,entry_price,exit_price,"
@@ -117,3 +121,105 @@ def parse_trades(path: str | Path) -> list[Trade]:
             )
 
         return trades
+
+
+def parse_open_positions(path: str | Path) -> list[OpenPosition]:
+    p = Path(path)
+    with p.open() as f:
+        reader = csv.reader(f)
+        try:
+            header_row = next(reader)
+        except StopIteration as e:
+            raise ParseError(f"{p}: empty file") from e
+
+        if ",".join(header_row) != HEADER_OPEN_POSITIONS:
+            raise ParseError(
+                f"{p}: header must be {HEADER_OPEN_POSITIONS!r}; got: {','.join(header_row)!r}"
+            )
+
+        rows: list[OpenPosition] = []
+        for i, raw in enumerate(reader, start=1):
+            if len(raw) != 5:
+                raise ParseError(f"open-positions row {i}: expected 5 columns, got {len(raw)}")
+            symbol, side_s, entry_d, entry_p, qty = raw
+            side = _parse_side(side_s, row=i)
+            entry_date = _parse_date(entry_d, field="entry_date", row=i)
+            entry_price = _parse_float(entry_p, field="entry_price", row=i)
+            quantity = _parse_float(qty, field="quantity", row=i)
+            if entry_price <= 0:
+                raise ParseError(
+                    f"open-positions row {i}: entry_price must be > 0, got {entry_price}"
+                )
+            if quantity <= 0:
+                raise ParseError(f"open-positions row {i}: quantity must be > 0, got {quantity}")
+            rows.append(
+                OpenPosition(
+                    row=i,
+                    symbol=symbol,
+                    side=side,
+                    entry_date=entry_date,
+                    entry_price=entry_price,
+                    quantity=quantity,
+                )
+            )
+        return rows
+
+
+def parse_splits(path: str | Path) -> list[Split]:
+    p = Path(path)
+    with p.open() as f:
+        reader = csv.reader(f)
+        try:
+            header_row = next(reader)
+        except StopIteration as e:
+            raise ParseError(f"{p}: empty file") from e
+
+        if ",".join(header_row) != HEADER_SPLITS:
+            raise ParseError(
+                f"{p}: header must be {HEADER_SPLITS!r}; got: {','.join(header_row)!r}"
+            )
+
+        rows: list[Split] = []
+        seen: set[tuple[str, str]] = set()
+        for i, raw in enumerate(reader, start=1):
+            if len(raw) != 3:
+                raise ParseError(f"splits row {i}: expected 3 columns, got {len(raw)}")
+            symbol, date_s, factor_s = raw
+            split_date = _parse_date(date_s, field="date", row=i)
+            factor = _parse_float(factor_s, field="factor", row=i)
+            if factor <= 0:
+                raise ParseError(f"splits row {i}: factor must be > 0, got {factor}")
+            key = (symbol, date_s)
+            if key in seen:
+                raise ParseError(f"splits row {i}: duplicate ({symbol}, {date_s})")
+            seen.add(key)
+            rows.append(Split(row=i, symbol=symbol, date=split_date, factor=factor))
+        return rows
+
+
+def parse_final_prices(path: str | Path) -> dict[str, float]:
+    p = Path(path)
+    with p.open() as f:
+        reader = csv.reader(f)
+        try:
+            header_row = next(reader)
+        except StopIteration as e:
+            raise ParseError(f"{p}: empty file") from e
+
+        if ",".join(header_row) != HEADER_FINAL_PRICES:
+            raise ParseError(
+                f"{p}: header must be {HEADER_FINAL_PRICES!r}; got: {','.join(header_row)!r}"
+            )
+
+        prices: dict[str, float] = {}
+        for i, raw in enumerate(reader, start=1):
+            if len(raw) != 2:
+                raise ParseError(f"final-prices row {i}: expected 2 columns, got {len(raw)}")
+            symbol, price_s = raw
+            price = _parse_float(price_s, field="price", row=i)
+            if price <= 0:
+                raise ParseError(f"final-prices row {i}: price must be > 0, got {price}")
+            if symbol in prices:
+                raise ParseError(f"final-prices row {i}: duplicate symbol {symbol}")
+            prices[symbol] = price
+        return prices

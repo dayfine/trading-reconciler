@@ -11,6 +11,24 @@ class Side(StrEnum):
 
 
 @dataclass(frozen=True)
+class OpenPosition:
+    row: int
+    symbol: str
+    side: Side
+    entry_date: date
+    entry_price: float
+    quantity: float
+
+
+@dataclass(frozen=True)
+class Split:
+    row: int
+    symbol: str
+    date: date
+    factor: float
+
+
+@dataclass(frozen=True)
 class Trade:
     row: int
     symbol: str

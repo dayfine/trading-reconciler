@@ -22,19 +22,18 @@ def _trade_to_dict(t: TradeResult) -> dict[str, Any]:
 
 
 def _open_to_dict(o: OpenPositionResult) -> dict[str, Any]:
-    d: dict[str, Any] = {
+    return {
         "symbol": o.symbol,
         "side": o.side.value,
         "entry_date": o.entry_date.isoformat(),
         "cost_basis_per_share": o.cost_basis_per_share,
         "effective_quantity": o.effective_quantity,
+        "final_price": o.final_price,
+        "unrealized_pnl": o.unrealized_pnl,
     }
-    d["final_price"] = o.final_price
-    d["unrealized_pnl"] = o.unrealized_pnl
-    return d
 
 
-def _summary(result: WalkResult, unrealized_total: float | None) -> dict[str, Any]:
+def _summary(result: WalkResult) -> dict[str, Any]:
     realized = sum(t.computed_pnl for t in result.trade_results)
     long_count = sum(1 for t in result.trade_results if t.side == Side.LONG)
     short_count = sum(1 for t in result.trade_results if t.side == Side.SHORT)
@@ -43,6 +42,7 @@ def _summary(result: WalkResult, unrealized_total: float | None) -> dict[str, An
     trade_count = len(result.trade_results)
     win_rate_pct = (win_count / trade_count * 100.0) if trade_count else 0.0
 
+    unrealized_total = result.unrealized_pnl_total
     if unrealized_total is None:
         total_value: float | None = None
         total_return_pct: float | None = None
@@ -74,9 +74,9 @@ def _summary(result: WalkResult, unrealized_total: float | None) -> dict[str, An
     }
 
 
-def to_json(result: WalkResult, *, unrealized_total: float | None = None) -> str:
+def to_json(result: WalkResult) -> str:
     payload = {
-        "summary": _summary(result, unrealized_total),
+        "summary": _summary(result),
         "trades": [_trade_to_dict(t) for t in result.trade_results],
         "open_positions": [_open_to_dict(o) for o in result.open_positions],
         "divergences": [
