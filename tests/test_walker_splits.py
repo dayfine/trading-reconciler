@@ -1,5 +1,7 @@
+from datetime import date
 from pathlib import Path
 
+from reconciler.models import OpenPosition, Side, Split
 from reconciler.parser import (
     parse_final_prices,
     parse_open_positions,
@@ -67,9 +69,6 @@ def test_open_position_missing_final_price_emits_exit5_divergence():
 
 def test_short_position_with_split_adjusts_correctly():
     """A short held through a 2:1 split. cost_basis halves, qty doubles."""
-    from reconciler.models import OpenPosition, Side, Split
-    from datetime import date
-
     opens = [
         OpenPosition(
             row=1,
