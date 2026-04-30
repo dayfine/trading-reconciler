@@ -17,6 +17,11 @@ from .parser import (
     parse_splits,
     parse_trades,
 )
+from .summary_check import (
+    SummaryParseError,
+    cross_check,
+    parse_summary_sexp,
+)
 from .tolerance import Tolerance
 from .walker import walk
 
@@ -42,6 +47,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--open-positions", type=Path)
     p.add_argument("--final-prices", type=Path)
     p.add_argument("--splits", type=Path)
+    p.add_argument("--summary", type=Path)
     p.add_argument("--commission-per-share", type=float, default=0.0)
     p.add_argument("--commission-per-trade", type=float, default=0.0)
     p.add_argument("--slippage-bps", type=float, default=0.0)
@@ -108,6 +114,26 @@ def main(argv: list[str] | None = None) -> int:
         commission_per_share=args.commission_per_share,
         commission_per_trade=args.commission_per_trade,
     )
+
+    if args.summary is not None:
+        try:
+            sim_summary = parse_summary_sexp(args.summary)
+        except SummaryParseError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            return EXIT_PARSE
+        realized_total = sum(t.computed_pnl for t in result.trade_results)
+        win_count = sum(1 for t in result.trade_results if t.computed_pnl > 0)
+        loss_count = sum(1 for t in result.trade_results if t.computed_pnl < 0)
+        result.divergences.extend(
+            cross_check(
+                sim_summary,
+                realized_pnl_total=realized_total,
+                win_count=win_count,
+                loss_count=loss_count,
+                trade_count=len(result.trade_results),
+                tolerance=tolerance,
+            )
+        )
 
     if args.verbose:
         print(
