@@ -4,13 +4,13 @@ Single-source view of all tracked work. Update when a status file flips
 state, an owner changes, or a PR opens / merges / closes. Keep the table
 terse; detail belongs in the per-track status files linked in column 1.
 
-Last updated: 2026-04-30 — initial Phase 1 track defined.
+Last updated: 2026-04-30 — Phase 1 closure (PR-C in flight).
 
 ## Active + complete tracks
 
 | Track | Status | Owner | Open PR(s) | Next task |
 |---|---|---|---|---|
-| [phase-1-reconciler](phase-1-reconciler.md) | NOT_STARTED | unassigned | — | Implement parser + types (PR-A) |
+| [phase-1-reconciler](phase-1-reconciler.md) | COMPLETE | unassigned | PR-C | Phase 2 starts new track |
 
 ## How to use
 

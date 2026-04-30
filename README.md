@@ -270,13 +270,36 @@ in `trading-1` (the reconciler's math is verifiable by hand).
 
 **2026-04-29** — Repo bootstrapped with this design doc.
 
-**2026-04-30** — `PHASE_1_SPEC.md` finalized. Definitive contract for
-the Phase 1 reconciler: event-walk semantics, strict realized-cash
-floor, 13 hand-computed test fixtures, severity-based exit codes.
-Implementation pending.
+**2026-04-30** — `PHASE_1_SPEC.md` finalized. Phase 1 implemented in
+PRs A/B/C. 12/13 fixtures green; #5 xfail pending spec clarification
+in [#9](https://github.com/dayfine/trading-reconciler/issues/9).
 
 Read order for implementers: this `README.md` (design rationale +
 phases) → `PHASE_1_SPEC.md` (authoritative I/O contract + accounting).
+
+## Quick start
+
+```bash
+pip install -e '.[dev]'
+pytest -v
+
+# Run against a trades file:
+reconciler --trades trades.csv --initial-cash 1000000
+
+# With splits + open positions + final prices:
+reconciler \
+  --trades trades.csv \
+  --initial-cash 1000000 \
+  --splits splits.csv \
+  --open-positions opens.csv \
+  --final-prices final.csv \
+  --format json
+
+# Sexp output for OCaml-side consumption:
+reconciler --trades trades.csv --initial-cash 1000000 --format sexp
+```
+
+Exit code is the load-bearing CI signal — see `PHASE_1_SPEC.md` §9.
 
 ## Cross-references in `trading-1`
 
