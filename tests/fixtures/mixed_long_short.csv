@@ -1,0 +1,5 @@
+symbol,side,entry_date,exit_date,days_held,entry_price,exit_price,quantity,pnl_dollars,pnl_percent,entry_stop,exit_stop,exit_trigger
+AAPL,LONG,2024-01-02,2024-02-15,44,150.00,160.00,100,1000.00,6.6667,140.00,160.00,target
+TSLA,SHORT,2024-01-15,2024-02-20,36,300.00,290.00,50,500.00,3.3333,310.00,290.00,target
+MSFT,LONG,2024-01-20,2024-03-20,60,300.00,295.00,50,-250.00,-1.6667,290.00,295.00,stop_loss
+AAPL,LONG,2024-03-01,2024-04-01,31,158.00,165.00,100,700.00,4.4304,150.00,165.00,target

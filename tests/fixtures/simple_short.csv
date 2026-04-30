@@ -1,0 +1,3 @@
+symbol,side,entry_date,exit_date,days_held,entry_price,exit_price,quantity,pnl_dollars,pnl_percent,entry_stop,exit_stop,exit_trigger
+TSLA,SHORT,2024-01-02,2024-02-01,30,300.00,290.00,50,500.00,3.3333,310.00,290.00,target
+NVDA,SHORT,2024-01-15,2024-03-01,45,500.00,510.00,30,-300.00,-2.0000,490.00,510.00,stop_loss

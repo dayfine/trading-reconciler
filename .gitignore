@@ -9,3 +9,15 @@
 .DS_Store
 *.swp
 *~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.venv/
+.coverage
