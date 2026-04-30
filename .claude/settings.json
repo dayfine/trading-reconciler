@@ -1,0 +1,20 @@
+{
+  "_comment": "Project-level settings for Claude Code. Consuming projects copy this file and adjust as needed. The companion .claude/settings.local.json (gitignored in some projects, committed in others) is for per-developer overrides. See README.md §Layer model.",
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(jj:*)",
+      "Bash(jj git:*)",
+      "Bash(jj status:*)",
+      "Bash(jj bookmark:*)",
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:github.com)",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

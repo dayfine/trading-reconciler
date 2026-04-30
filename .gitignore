@@ -1,0 +1,11 @@
+# AI Coder session state — per-developer, not committed.
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+.claude/worktrees/
+.agents/worktrees/
+.agents/jj-ws/
+
+# OS / editor cruft
+.DS_Store
+*.swp
+*~
