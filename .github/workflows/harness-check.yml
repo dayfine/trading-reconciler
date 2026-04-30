@@ -1,0 +1,16 @@
+# harness: reusable
+name: Harness Check
+
+on:
+  pull_request:
+    paths:
+      - '.agents/agents/**'
+      - '.agents/rules/**'
+
+jobs:
+  check-harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run agent-harness-check.sh
+        run: sh bin/agent-harness-check.sh
