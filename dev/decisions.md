@@ -1,3 +1,7 @@
+---
+harness: project
+---
+
 # Decisions log
 
 Human-authored guidance for agents. Read at session start by every
