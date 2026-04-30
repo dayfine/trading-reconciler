@@ -86,6 +86,56 @@ def test_exit_2_parse_error(tmp_path):
     assert code == EXIT_PARSE
 
 
+def test_exit_0_held_through_split_with_splits():
+    code = main(
+        [
+            "--trades",
+            str(FIXTURES / "held_through_4to1_split.csv"),
+            "--initial-cash",
+            "50000",
+            "--splits",
+            str(FIXTURES / "held_through_4to1_split.splits.csv"),
+        ]
+    )
+    assert code == EXIT_OK
+
+
+def test_exit_5_open_position_missing_price():
+    from reconciler.cli import EXIT_MISSING_PRICE
+
+    code = main(
+        [
+            "--trades",
+            str(FIXTURES / "open_position_missing_price.trades.csv"),
+            "--initial-cash",
+            "1000000",
+            "--open-positions",
+            str(FIXTURES / "open_position_missing_price.opens.csv"),
+            "--final-prices",
+            str(FIXTURES / "open_position_missing_price.prices.csv"),
+        ]
+    )
+    assert code == EXIT_MISSING_PRICE
+
+
+def test_exit_0_open_position_with_split():
+    code = main(
+        [
+            "--trades",
+            str(FIXTURES / "open_positions_with_split.trades.csv"),
+            "--initial-cash",
+            "50000",
+            "--open-positions",
+            str(FIXTURES / "open_positions_with_split.opens.csv"),
+            "--splits",
+            str(FIXTURES / "open_positions_with_split.splits.csv"),
+            "--final-prices",
+            str(FIXTURES / "open_positions_with_split.prices.csv"),
+        ]
+    )
+    assert code == EXIT_OK
+
+
 def test_strict_fp_warns_on_explicit_epsilon(capsys):
     main(
         [

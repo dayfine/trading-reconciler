@@ -13,11 +13,30 @@ def compute_pnl(
     commission_per_share: float = 0.0,
     commission_per_trade: float = 0.0,
 ) -> float:
-    leg = commissions_per_leg(trade.quantity, commission_per_share, commission_per_trade)
-    if trade.side == Side.LONG:
-        gross = (trade.exit_price - trade.entry_price) * trade.quantity
+    return compute_pnl_lot(
+        cost_basis_per_share=trade.entry_price,
+        exit_price=trade.exit_price,
+        quantity=trade.quantity,
+        side=trade.side,
+        commission_per_share=commission_per_share,
+        commission_per_trade=commission_per_trade,
+    )
+
+
+def compute_pnl_lot(
+    *,
+    cost_basis_per_share: float,
+    exit_price: float,
+    quantity: float,
+    side: Side,
+    commission_per_share: float = 0.0,
+    commission_per_trade: float = 0.0,
+) -> float:
+    leg = commissions_per_leg(quantity, commission_per_share, commission_per_trade)
+    if side == Side.LONG:
+        gross = (exit_price - cost_basis_per_share) * quantity
     else:
-        gross = (trade.entry_price - trade.exit_price) * trade.quantity
+        gross = (cost_basis_per_share - exit_price) * quantity
     return gross - 2.0 * leg
 
 

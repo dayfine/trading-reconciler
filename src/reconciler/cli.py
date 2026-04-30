@@ -10,7 +10,13 @@ from .models import (
     SEVERITY_MISSING_PRICE,
     SEVERITY_PNL_MISMATCH,
 )
-from .parser import ParseError, parse_trades
+from .parser import (
+    ParseError,
+    parse_final_prices,
+    parse_open_positions,
+    parse_splits,
+    parse_trades,
+)
 from .tolerance import Tolerance
 from .walker import walk
 
@@ -33,6 +39,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="reconciler")
     p.add_argument("--trades", required=True, type=Path)
     p.add_argument("--initial-cash", required=True, type=float)
+    p.add_argument("--open-positions", type=Path)
+    p.add_argument("--final-prices", type=Path)
+    p.add_argument("--splits", type=Path)
     p.add_argument("--commission-per-share", type=float, default=0.0)
     p.add_argument("--commission-per-trade", type=float, default=0.0)
     p.add_argument("--epsilon-relative", type=float, default=1e-6)
@@ -67,6 +76,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         trades = parse_trades(args.trades)
+        opens = parse_open_positions(args.open_positions) if args.open_positions else []
+        splits = parse_splits(args.splits) if args.splits else []
+        final_prices = parse_final_prices(args.final_prices) if args.final_prices else None
     except ParseError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return EXIT_PARSE
@@ -75,6 +87,9 @@ def main(argv: list[str] | None = None) -> int:
         trades,
         args.initial_cash,
         tolerance=tolerance,
+        open_positions=opens,
+        splits=splits,
+        final_prices=final_prices,
         commission_per_share=args.commission_per_share,
         commission_per_trade=args.commission_per_trade,
     )

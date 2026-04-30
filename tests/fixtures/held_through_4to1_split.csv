@@ -1,0 +1,2 @@
+symbol,side,entry_date,exit_date,days_held,entry_price,exit_price,quantity,pnl_dollars,pnl_percent,entry_stop,exit_stop,exit_trigger
+AAPL,LONG,2020-08-15,2020-09-15,31,480.00,130.00,100,4000.00,8.3333,460.00,130.00,target
