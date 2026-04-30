@@ -9,11 +9,11 @@ class Tolerance:
     abs_: float
 
     @classmethod
-    def default(cls) -> "Tolerance":
+    def default(cls) -> Tolerance:
         return cls(rel=1e-6, abs_=0.01)
 
     @classmethod
-    def strict(cls) -> "Tolerance":
+    def strict(cls) -> Tolerance:
         return cls(rel=0.0, abs_=0.0)
 
     def matches(self, input_v: float, computed_v: float) -> bool:

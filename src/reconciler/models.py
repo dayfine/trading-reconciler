@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
-from enum import Enum
+from enum import StrEnum
 
 
-class Side(str, Enum):
+class Side(StrEnum):
     LONG = "LONG"
     SHORT = "SHORT"
 
@@ -24,7 +24,7 @@ class Trade:
     pnl_percent: float
 
 
-class EventKind(str, Enum):
+class EventKind(StrEnum):
     SPLIT = "SPLIT"
     ENTRY = "ENTRY"
     EXIT = "EXIT"
