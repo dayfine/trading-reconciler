@@ -1,6 +1,6 @@
 # Track: phase-1-reconciler
 
-**Status**: NOT_STARTED
+**Status**: COMPLETE (modulo merge of PR-C)
 **Owner**: unassigned
 **Milestone**: [Phase 1 — bootstrap](https://github.com/dayfine/trading-reconciler/milestone/1)
 **Spec**: [`PHASE_1_SPEC.md`](../../PHASE_1_SPEC.md) (authoritative)
@@ -128,7 +128,31 @@ depend on PR-A but not on each other), split into multiple tracks.
 
 ## Next task
 
-Implement parser + types for `--trades` CSV (13-col + 12-col headers
-per §2.2). Validation per §2.4. Tests for fixtures #1, #11 minimal
-(parse + validate; no walk yet). Open as PR-A draft; full PR-A
-completion includes the event-walk core.
+Phase 1 complete after PR-C merges. Phase 2 work (soft-floor with
+mid-trajectory MtM via `--daily-prices`, splits/ops research,
+trading-1 integration) starts in a new track — see
+`PHASE_1_SPEC.md` §11 for deferred items and `README.md` §Roadmap
+Phase 2+ for sequencing.
+
+Open question still pending: spec ambiguity #9 (held-through-split
+without `--splits` exit code). Resolution flips
+`tests/test_phase_1_open_questions.py` from xfail to a hard
+assertion.
+
+## Fixtures landed (13/13)
+
+| # | Fixture | PR | Status |
+|---|---|---|---|
+| 1 | `simple_long.csv` | PR-A | green |
+| 2 | `simple_short.csv` | PR-A | green |
+| 3 | `mixed_long_short.csv` | PR-A | green |
+| 4 | `held_through_4to1_split.csv` + matching splits | PR-B | green |
+| 5 | `held_through_4to1_split_no_splits_input` | PR-B | xfail (#9) |
+| 6 | `cash_floor_violation_event_walk.csv` | PR-A | green (load-bearing) |
+| 7 | `pnl_disagrees.csv` | PR-A | green |
+| 8 | `commission_match.csv` | PR-C | green |
+| 9 | `commission_mismatch.csv` | PR-C | green |
+| 10 | `open_position_missing_price.*` | PR-B | green |
+| 11 | `legacy_12col.csv` | PR-A | green |
+| 12 | `intra_day_round_trip.csv` | PR-A | green |
+| 13 | `open_positions_with_split.*` | PR-B | green |

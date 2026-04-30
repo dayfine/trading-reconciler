@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from .models import Side
+from .sexp import encode as sexp_encode
 from .walker import OpenPositionResult, TradeResult, WalkResult
 
 
@@ -74,8 +75,8 @@ def _summary(result: WalkResult) -> dict[str, Any]:
     }
 
 
-def to_json(result: WalkResult) -> str:
-    payload = {
+def _payload(result: WalkResult) -> dict[str, Any]:
+    return {
         "summary": _summary(result),
         "trades": [_trade_to_dict(t) for t in result.trade_results],
         "open_positions": [_open_to_dict(o) for o in result.open_positions],
@@ -83,4 +84,11 @@ def to_json(result: WalkResult) -> str:
             {"type": d.type, **d.payload} for d in result.divergences
         ],
     }
-    return json.dumps(payload, indent=2, sort_keys=False)
+
+
+def to_json(result: WalkResult) -> str:
+    return json.dumps(_payload(result), indent=2, sort_keys=False)
+
+
+def to_sexp(result: WalkResult) -> str:
+    return sexp_encode(_payload(result))

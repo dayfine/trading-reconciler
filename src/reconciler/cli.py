@@ -4,7 +4,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .emit import to_json
+from .emit import to_json, to_sexp
 from .models import (
     SEVERITY_CASH_FLOOR,
     SEVERITY_MISSING_PRICE,
@@ -44,10 +44,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--splits", type=Path)
     p.add_argument("--commission-per-share", type=float, default=0.0)
     p.add_argument("--commission-per-trade", type=float, default=0.0)
+    p.add_argument("--slippage-bps", type=float, default=0.0)
     p.add_argument("--epsilon-relative", type=float, default=1e-6)
     p.add_argument("--epsilon-absolute", type=float, default=0.01)
     p.add_argument("--strict-fp", action="store_true")
-    p.add_argument("--format", choices=["json"], default="json")
+    p.add_argument("--format", choices=["json", "sexp"], default="json")
     p.add_argument("--verbose", action="store_true")
     return p
 
@@ -74,6 +75,20 @@ def main(argv: list[str] | None = None) -> int:
     else:
         tolerance = Tolerance(rel=args.epsilon_relative, abs_=args.epsilon_absolute)
 
+    if args.slippage_bps != 0.0:
+        print(
+            f"WARN: --slippage-bps {args.slippage_bps} reserved for Phase 2; ignored.",
+            file=sys.stderr,
+        )
+
+    if args.verbose:
+        print(
+            f"INFO: tolerance rel={tolerance.rel} abs={tolerance.abs_} "
+            f"commission_per_share={args.commission_per_share} "
+            f"commission_per_trade={args.commission_per_trade}",
+            file=sys.stderr,
+        )
+
     try:
         trades = parse_trades(args.trades)
         opens = parse_open_positions(args.open_positions) if args.open_positions else []
@@ -93,7 +108,19 @@ def main(argv: list[str] | None = None) -> int:
         commission_per_share=args.commission_per_share,
         commission_per_trade=args.commission_per_trade,
     )
-    print(to_json(result))
+
+    if args.verbose:
+        print(
+            f"INFO: walked {len(trades)} trades, {len(opens)} open positions, "
+            f"{len(splits)} splits; final_cash={result.final_cash} "
+            f"divergences={len(result.divergences)}",
+            file=sys.stderr,
+        )
+
+    if args.format == "sexp":
+        print(to_sexp(result))
+    else:
+        print(to_json(result))
 
     if not result.divergences:
         return EXIT_OK
