@@ -1,0 +1,2 @@
+symbol,side,entry_date,exit_date,days_held,entry_price,exit_price,quantity,pnl_dollars,pnl_percent,entry_stop,exit_stop,exit_trigger
+AAPL,LONG,2024-01-02,2024-02-15,44,150.00,160.00,100,9999.99,66.6667,140.00,160.00,target

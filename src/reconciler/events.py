@@ -1,0 +1,35 @@
+from __future__ import annotations
+
+from .models import Event, EventKind, Trade
+
+
+def events_from_trades(trades: list[Trade]) -> list[Event]:
+    events: list[Event] = []
+    for t in trades:
+        events.append(
+            Event(
+                date=t.entry_date,
+                kind=EventKind.ENTRY,
+                symbol=t.symbol,
+                side=t.side,
+                price=t.entry_price,
+                quantity=t.quantity,
+                source_row=t.row,
+            )
+        )
+        events.append(
+            Event(
+                date=t.exit_date,
+                kind=EventKind.EXIT,
+                symbol=t.symbol,
+                side=t.side,
+                price=t.exit_price,
+                quantity=t.quantity,
+                source_row=t.row,
+            )
+        )
+    return events
+
+
+def sort_events(events: list[Event]) -> list[Event]:
+    return sorted(events, key=lambda e: e.sort_key())
